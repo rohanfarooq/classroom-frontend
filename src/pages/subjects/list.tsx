@@ -80,7 +80,7 @@ const SubjectsList = () => {
             <Breadcrumb/>
             <h1 className="page-title">Subjects</h1>
             <div className="intro-row">
-                <p>Quick access to essential matrics and management tools.</p>
+                <p>Quick access to essential metrics and management tools.</p>
                 <div className="actions-row">
                     <div className="search-field">
                         <Search className="search-icon"/>
