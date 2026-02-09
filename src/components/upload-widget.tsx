@@ -3,7 +3,13 @@ import {UploadWidgetValue} from "@/types";
 import {UploadCloud} from "lucide-react";
 import {CLOUDINARY_CLOUD_NAME, CLOUDINARY_UPLOAD_PRESET} from "@/constants";
 
-const UploadWidget = ({value = null, onChange, disabled = false}) => {
+interface UploadWidgetProps {
+    value?: UploadWidgetValue | null;
+    onChange?: (payload: UploadWidgetValue | null) => void;
+    disabled?: boolean;
+}
+
+const UploadWidget = ({value = null, onChange, disabled = false}: UploadWidgetProps) => {
     const widgetRef = useRef<CloudinaryWidget | null>(null)
     const onChangeRef = useRef(onChange)
 
@@ -27,9 +33,15 @@ const UploadWidget = ({value = null, onChange, disabled = false}) => {
                 uploadPreset: CLOUDINARY_UPLOAD_PRESET,
                 multiple: false,
                 folder: 'uploads',
-                maxFilesSize: 5000000,
+                maxFileSize: 5000000,
                 clientAllowedFormats: ['png', 'jpg', 'jpeg', 'webp'],
             }, (error, result) => {
+                if (error) {
+                    console.error('Upload error:', error);
+                    // Consider adding user-facing error notification
+                    return;
+                }
+
                 if (!error && result.event === 'success') {
                     const payload: UploadWidgetValue = {
                         url: result.info.secure_url,
@@ -48,8 +60,16 @@ const UploadWidget = ({value = null, onChange, disabled = false}) => {
 
         if (initializeWidget()) return
 
+        let attempts = 0;
+        const maxAttempts = 20; // 10 seconds max
         const intervalId = window.setInterval(() => {
-            if (initializeWidget()) window.clearInterval(intervalId)
+            attempts++;
+            if (initializeWidget() || attempts >= maxAttempts) {
+                window.clearInterval(intervalId);
+                if (attempts >= maxAttempts && !widgetRef.current) {
+                    console.error('Failed to initialize Cloudinary widget');
+                }
+            }
         }, 500)
 
         return () => window.clearInterval(intervalId)
@@ -71,8 +91,10 @@ const UploadWidget = ({value = null, onChange, disabled = false}) => {
                 tabIndex={0}
                 onClick={openWidget}
                 onKeyDown={(event) => {
-                    event.preventDefault();
-                    if (event.key === 'Enter') openWidget()
+                    if (event.key === 'Enter' || event.key === ' ') {
+                        event.preventDefault();
+                        openWidget()
+                    }
                 }}
             >
                 <div className="upload-prompt">
