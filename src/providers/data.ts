@@ -71,9 +71,22 @@ const options: CreateDataProviderOptions = {
         buildQueryParams: async ({variables}) => variables,
 
         mapResponse: async (response) => {
+            if (!response.ok) throw await buildHttpError(response)
+
             const json: CreateResponse = await response.clone().json();
 
-            return json.data || [];
+            return json.data ?? {};
+        }
+    },
+
+    getOne: {
+        getEndpoint: ({resource, id}) => `${resource}/${id}`,
+
+        mapResponse: async (response) => {
+            if (!response.ok) throw await buildHttpError(response)
+
+            const json: CreateResponse = await response.clone().json();
+            return json.data ?? {};
         }
     }
 }

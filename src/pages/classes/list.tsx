@@ -11,6 +11,7 @@ import {ClassDetails, Subject, User} from "@/types";
 import {ColumnDef} from "@tanstack/react-table";
 import {Badge} from "@/components/ui/badge.tsx";
 import {useList} from "@refinedev/core";
+import {ShowButton} from "@/components/refine-ui/buttons/show.tsx";
 
 const ClassesList = () => {
     const [searchQuery, setSearchQuery] = useState('')
@@ -62,7 +63,8 @@ const ClassesList = () => {
                             {url ? (
                                 <img src={url} alt="Banner" className="w-full h-full object-cover"/>
                             ) : (
-                                <div className="w-full h-full bg-muted flex items-center justify-center text-[10px] text-muted-foreground text-center p-1">
+                                <div
+                                    className="w-full h-full bg-muted flex items-center justify-center text-[10px] text-muted-foreground text-center p-1">
                                     No Banner
                                 </div>
                             )}
@@ -106,6 +108,13 @@ const ClassesList = () => {
                 accessorKey: 'capacity',
                 header: () => <p className="column-title">Capacity</p>,
                 cell: ({getValue}) => <span className="text-foreground">{getValue<number>()}</span>,
+            },
+            {
+                id: 'details',
+                size: 140,
+                header: () => <p className="column-title">Details</p>,
+                cell: ({row}) => <ShowButton resource="classes" recordItemId={row.original.id} variant="outline"
+                                             size="sm">View</ShowButton>,
             },
         ], []),
         refineCoreProps: {

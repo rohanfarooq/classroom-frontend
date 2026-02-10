@@ -175,7 +175,7 @@
       @apply text-destructive;
     }
 
-    .banner {
+    .banner-class {
       @apply mt-5 mb-1;
 
       img {
